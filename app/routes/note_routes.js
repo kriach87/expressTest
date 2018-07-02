@@ -1,59 +1,71 @@
-var ObjectID = require('mongodb').ObjectID;
+const { ObjectID } = require('mongodb');
+const Note = require('../model/notes');
 
-module.exports = function(app, db) {
+// title, date, author, text
+module.exports = function (app) {
   app.get('/notes/:id', (req, res) => {
-    const id = req.params.id;
-    const details = { '_id': new ObjectID(id) };
-    db.collection('notes').findOne(details, (err, item) => {
+    const { id } = req.params;
+    const details = { _id: new ObjectID(id) };
+    Note.find(details, (err, item) => {
       if (err) {
-        res.send({'error':'An error has occurred'});
+        res.send({ error: err });
       } else {
         res.send(item);
-      } 
+      }
     });
   });
 
   app.get('/notes', (req, res) => {
-    db.collection('notes').findOne({}, (err, items) => {
+    Note.find({}, (err, items) => {
       if (err) {
-        res.send({'error':'An error has occurred'});
+        res.send({ error: err });
       } else {
         res.send(items);
-      } 
+      }
     });
   });
 
   app.post('/notes', (req, res) => {
-    const note = { text: req.body.body, title: req.body.title };
-    db.collection('notes').insert(note, (err, result) => {
-      if (err) { 
-        res.send({ 'error': 'An error has occurred' }); 
+    const note = new Note({
+      title: req.body.title,
+      date: req.body.date,
+      author: req.body.author,
+      text: req.body.text,
+    });
+    Note.create(note, (err, result) => {
+      if (err) {
+        res.send({ error: err });
       } else {
-        res.send(result.ops[0]);
+        res.send(result);
       }
     });
   });
   app.delete('/notes/:id', (req, res) => {
-    const id = req.params.id;
-    const details = { '_id': new ObjectID(id) };
-    db.collection('notes').remove(details, (err, item) => {
+    const { id } = req.params;
+    const details = { _id: new ObjectID(id) };
+    Note.delete(details, (err, item) => {
       if (err) {
-        res.send({'error':'An error has occurred'});
+        res.send({ error: err });
       } else {
-        res.send('Note ' + id + ' deleted!');
-      } 
+        res.send(`Note ${item.id} deleted!`);
+      }
     });
   });
   app.put('/notes/:id', (req, res) => {
-    const id = req.params.id;
-    const details = { '_id': new ObjectID(id) };
-    const note = { text: req.body.body, title: req.body.title };
-    db.collection('notes').update(details, note, (err, result) => {
+    const { id } = req.params;
+    const details = { _id: new ObjectID(id) };
+    const note = {
+      title: req.body.title,
+      date: req.body.date,
+      author: req.body.author,
+      text: req.body.text,
+    };
+    Note.findByIdAndUpdate(details, note, (err, result) => {
       if (err) {
-          res.send({'error':'An error has occurred'});
+        res.send({ error: err });
       } else {
-          res.send(note);
-      } 
+        res.send(result);
+      }
     });
   });
 };

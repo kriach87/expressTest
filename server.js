@@ -1,18 +1,24 @@
-const express        = require('express');
-const MongoClient    = require('mongodb').MongoClient;
-const bodyParser     = require('body-parser');
-const app            = express();
-const db             = require('./config/db');
-var mongoose = require('mongoose');
-
-const port = 8000;
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const mongoose = require('mongoose');
+const db = require('./config/db');
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-var mongoose = require('mongoose');
+require('./app/routes')(app, db);
 
 mongoose.connect(db.url, {});
 
-var dbM = mongoose.connection;
 
-dbM.on('error', console.error.bind(console, 'MongoDB connection error:'));
+function connect() {
+  return mongoose.connect(db.url, {}).connection;
+}
+
+const connection = connect();
+
+require('./app/routes')(app, connection);
+
+app.listen(port);

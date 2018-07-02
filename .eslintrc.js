@@ -1,6 +1,10 @@
 module.exports = {
-    "extends": "airbnb",
-    "plugins": [
-        "import"
-    ]
-};
+  "extends": "airbnb",
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+  },
+  "env": {
+  }
+}
