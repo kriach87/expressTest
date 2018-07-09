@@ -43,11 +43,11 @@ module.exports = function (app) {
   app.delete('/notes/:id', (req, res) => {
     const { id } = req.params;
     const details = { _id: new ObjectID(id) };
-    Note.deleteOne(details, (err, item) => {
+    Note.deleteOne(details, (err) => {
       if (err) {
         res.send({ error: err });
       } else {
-        res.send(`Note ${details._id} deleted!`);
+        res.send('Note deleted!');
       }
     });
   });
